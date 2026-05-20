@@ -1,1436 +1,513 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jogo da Forca em Equipes - Mesopotâmia</title>
-  <style>
-    :root {
-      --barro-escuro: #3d2415;
-      --barro: #6f4325;
-      --argila: #9a6337;
-      --areia: #d9b06f;
-      --pergaminho: #f3dfb1;
-      --ouro: #f0c96a;
-      --lapis: #2f6174;
-      --lapis-claro: #8ec6d5;
-      --branco: #fff8eb;
-      --vermelho: #cf6b54;
-      --sombra: rgba(35, 19, 10, 0.38);
-    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Forca - Renascimento</title>
 
+  <style>
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #3b1f0e, #8b5e34, #d4a45c);
+      color: #fff;
       min-height: 100vh;
-      font-family: Georgia, "Times New Roman", serif;
-      background:
-        radial-gradient(circle at 18% 12%, rgba(240, 201, 106, 0.18), transparent 26%),
-        radial-gradient(circle at 83% 18%, rgba(142, 198, 213, 0.12), transparent 24%),
-        linear-gradient(135deg, var(--barro-escuro), var(--barro), var(--argila));
-      color: var(--branco);
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      padding: 18px;
-      position: relative;
-    }
-
-    body::before {
-      content: "𒀭 𒁹 𒆠 𒌓 𒈨 𒀀 𒆠 𒁹 𒌓";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.07;
-      font-size: clamp(2.2rem, 4vw, 4.8rem);
-      line-height: 2.2;
-      letter-spacing: 1.8rem;
-      display: flex;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      transform: rotate(-8deg);
-      z-index: 0;
+      padding: 20px;
     }
 
-    .game {
-      width: min(1320px, 100%);
-      background: linear-gradient(180deg, rgba(76, 44, 24, 0.94), rgba(58, 31, 17, 0.96));
-      border: 3px solid rgba(240, 201, 106, 0.62);
-      border-radius: 30px;
-      box-shadow: 0 22px 54px var(--sombra), inset 0 0 0 2px rgba(243, 223, 177, 0.14);
-      padding: 22px;
-      backdrop-filter: blur(6px);
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-    }
-
-    .game::before {
-      content: "";
-      position: absolute;
-      inset: 10px;
-      border: 1px solid rgba(240, 201, 106, 0.26);
-      border-radius: 22px;
-      pointer-events: none;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 1;
+    .jogo-container {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(45, 24, 10, 0.95);
+      border: 4px solid #f1c27d;
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
     }
 
     h1 {
-      margin: 0;
-      font-size: clamp(2.2rem, 4.6vw, 4.35rem);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--ouro);
-      text-shadow: 0 3px 0 rgba(38, 20, 10, 0.7);
-    }
-
-    .subtitle {
-      margin: 8px 0 0;
-      font-size: clamp(1rem, 1.8vw, 1.35rem);
-      font-weight: 800;
-      color: var(--pergaminho);
-      letter-spacing: 0.5px;
-    }
-
-    .meso-divider {
-      margin: 12px auto 0;
-      width: min(520px, 92%);
-      height: 12px;
-      position: relative;
-    }
-
-    .meso-divider::before,
-    .meso-divider::after {
-      content: "";
-      position: absolute;
-      top: 5px;
-      width: calc(50% - 42px);
-      height: 2px;
-      background: rgba(240, 201, 106, 0.75);
-    }
-
-    .meso-divider::before { left: 0; }
-    .meso-divider::after { right: 0; }
-
-    .meso-divider span {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: -4px;
-      color: var(--ouro);
-      font-size: 1.25rem;
-      letter-spacing: 0.35rem;
-      font-weight: 900;
-    }
-
-    .rules-top {
-      position: relative;
-      z-index: 1;
-      margin: 14px 0 16px;
-      padding: 16px 18px;
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(243, 223, 177, 0.97), rgba(217, 176, 111, 0.95));
-      color: var(--barro-escuro);
-      border: 3px solid rgba(111, 67, 37, 0.68);
-      box-shadow: inset 0 0 0 2px rgba(255, 248, 235, 0.32), 0 8px 20px rgba(35, 19, 10, 0.22);
-    }
-
-    .rules-top h2 {
+      text-align: center;
+      font-size: 42px;
       margin: 0 0 10px;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: clamp(1.15rem, 2vw, 1.5rem);
-      color: var(--barro-escuro);
+      color: #ffd27f;
+      text-shadow: 2px 2px 4px #000;
     }
 
-    .rules-list {
-      margin: 0;
-      padding-left: 22px;
+    .subtitulo {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 25px;
+      color: #fff1cf;
+    }
+
+    .conteudo {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 7px 22px;
-      font-size: 1rem;
-      line-height: 1.4;
-      font-weight: 800;
-    }
-
-    .rules-note {
-      margin: 10px 0 0;
-      padding-top: 10px;
-      border-top: 1px solid rgba(111, 67, 37, 0.36);
-      text-align: center;
-      font-size: 1rem;
-      line-height: 1.4;
-      font-weight: 900;
-    }
-
-    .topbar {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .info-card {
-      background: linear-gradient(180deg, rgba(243, 223, 177, 0.16), rgba(154, 99, 55, 0.22));
-      border: 1px solid rgba(240, 201, 106, 0.48);
-      border-radius: 18px;
-      padding: 12px;
-      text-align: center;
-      box-shadow: inset 0 0 0 1px rgba(255, 248, 235, 0.08);
-    }
-
-    .info-label {
-      display: block;
-      font-size: 0.95rem;
-      font-weight: 800;
-      opacity: 0.95;
-      margin-bottom: 4px;
-    }
-
-    .info-value {
-      display: block;
-      font-size: clamp(1.25rem, 2.2vw, 1.85rem);
-      font-weight: 900;
-    }
-
-    .stage {
-      position: relative;
-      z-index: 1;
-      background: linear-gradient(180deg, rgba(111, 67, 37, 0.52), rgba(61, 36, 21, 0.72));
-      border: 2px solid rgba(240, 201, 106, 0.46);
-      border-radius: 24px;
-      padding: 18px;
-      display: grid;
-      grid-template-columns: 300px 1fr;
-      grid-template-areas:
-        "prompt prompt"
-        "hangman word";
-      gap: 16px 20px;
-      align-items: stretch;
-      box-shadow: inset 0 0 0 1px rgba(255, 248, 235, 0.08);
-    }
-
-    .prompt-area {
-      grid-area: prompt;
-    }
-
-    .turn-banner {
-      display: flex;
+      grid-template-columns: 320px 1fr;
+      gap: 30px;
       align-items: center;
-      justify-content: center;
+    }
+
+    .forca-area {
+      background: #f4d9a6;
+      border-radius: 20px;
+      padding: 20px;
+      color: #3b1f0e;
       text-align: center;
-      background: linear-gradient(135deg, var(--ouro), #d9a94e);
-      color: #3b2412;
-      border: 2px solid rgba(255, 248, 235, 0.58);
-      border-radius: 18px;
-      padding: 12px 16px;
-      margin-bottom: 12px;
-      font-size: clamp(1.15rem, 2.35vw, 1.65rem);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 6px 0 rgba(38, 20, 10, 0.35);
-    }
-
-    .question-title {
-      margin: 0 0 10px;
-      font-size: clamp(1.2rem, 2.1vw, 1.6rem);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--ouro);
-    }
-
-    .clue {
-      background: linear-gradient(180deg, rgba(243, 223, 177, 0.96), rgba(217, 176, 111, 0.95));
-      color: #3d2415;
-      border: 3px solid rgba(111, 67, 37, 0.65);
-      padding: 18px;
-      border-radius: 18px;
-      font-size: clamp(1.35rem, 2.55vw, 2rem);
-      font-weight: 900;
-      line-height: 1.35;
-      min-height: 96px;
-      display: flex;
-      align-items: center;
-      box-shadow: inset 0 0 0 2px rgba(255, 248, 235, 0.36), 0 8px 18px rgba(35, 19, 10, 0.22);
-    }
-
-    .hangman-box {
-      grid-area: hangman;
-      background: linear-gradient(180deg, rgba(47, 97, 116, 0.28), rgba(61, 36, 21, 0.54));
-      border: 2px solid rgba(240, 201, 106, 0.36);
-      border-radius: 22px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 340px;
-      box-shadow: inset 0 0 0 1px rgba(255, 248, 235, 0.08);
+      border: 4px solid #b67b3d;
     }
 
     svg {
-      width: 220px;
+      width: 250px;
       max-width: 100%;
-      height: 265px;
+      height: 300px;
     }
 
-    .line {
-      stroke: var(--pergaminho);
-      stroke-width: 7;
-      stroke-linecap: round;
-      fill: none;
-    }
-
-    .body-part {
-      stroke: var(--ouro);
-      stroke-width: 7;
-      stroke-linecap: round;
-      fill: none;
+    .parte-corpo {
       display: none;
+      stroke: #3b1f0e;
+      stroke-width: 6;
+      stroke-linecap: round;
+      fill: none;
     }
 
-    .forca-caption {
-      margin: 4px 0 0;
+    .painel-jogo {
       text-align: center;
-      font-size: 0.96rem;
-      line-height: 1.35;
-      font-weight: 800;
     }
 
-    .word-stage {
-      grid-area: word;
-      background: linear-gradient(180deg, rgba(243, 223, 177, 0.14), rgba(47, 97, 116, 0.18));
-      border: 2px solid rgba(240, 201, 106, 0.34);
-      border-radius: 22px;
+    .contador {
+      background: #6e3e18;
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      border: 2px solid #ffd27f;
+    }
+
+    .dica {
+      background: rgba(255, 210, 127, 0.18);
+      border-left: 6px solid #ffd27f;
       padding: 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 12px;
-      min-height: 340px;
-      box-shadow: inset 0 0 0 1px rgba(255, 248, 235, 0.08);
-    }
-
-    .word-stage-title {
-      margin: 0;
-      text-align: center;
-      font-size: clamp(1.2rem, 2.2vw, 1.75rem);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 900;
-      color: var(--ouro);
-    }
-
-    .word {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      min-height: 112px;
-      padding: 14px;
-      background: rgba(243, 223, 177, 0.11);
-      border: 1px dashed rgba(240, 201, 106, 0.52);
-      border-radius: 20px;
-    }
-
-    .letter-slot {
-      width: clamp(34px, 4vw, 52px);
-      height: clamp(46px, 5.3vw, 66px);
-      border-bottom: 5px solid var(--ouro);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: clamp(1.7rem, 3vw, 2.65rem);
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .letter-slot.space {
-      border-bottom: none;
-      width: 20px;
-    }
-
-    .controls {
-      position: relative;
-      z-index: 1;
-      margin-top: 16px;
-      background: linear-gradient(180deg, rgba(61, 36, 21, 0.76), rgba(111, 67, 37, 0.58));
-      border: 2px solid rgba(240, 201, 106, 0.35);
-      border-radius: 24px;
-      padding: 16px;
-    }
-
-    .message {
-      min-height: 42px;
-      margin: 0 0 12px;
-      text-align: center;
-      font-size: clamp(1.05rem, 2vw, 1.45rem);
-      font-weight: 900;
-      line-height: 1.35;
-    }
-
-    .message.success {
-      color: var(--ouro);
-    }
-
-    .message.fail {
-      color: #ffd0d0;
-    }
-
-    .message.notice {
-      color: var(--lapis-claro);
-    }
-
-    .action-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    button {
-      border: none;
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-      font-family: Georgia, "Times New Roman", serif;
-    }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-2px);
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-
-    .action-btn,
-    .submit-word-btn,
-    .pass-btn,
-    .give-up-btn {
-      min-height: 56px;
-      border-radius: 16px;
-      padding: 11px 18px;
-      font-size: 1rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.18);
-    }
-
-    .action-btn {
-      background: linear-gradient(135deg, var(--lapis-claro), #76afbf);
-      color: #123744;
-    }
-
-    .action-btn.primary {
-      background: linear-gradient(135deg, var(--ouro), #d7a547);
-      color: #3b2412;
-    }
-
-    .action-btn.secondary,
-    .pass-btn {
-      background: linear-gradient(135deg, var(--pergaminho), #e7c98c);
-      color: var(--barro-escuro);
-    }
-
-    .give-up-btn {
-      background: linear-gradient(135deg, var(--vermelho), #b85843);
-      color: #4c140e;
-    }
-
-    .final-panel {
-      display: none;
-      margin: 12px 0;
-      background: linear-gradient(180deg, rgba(243, 223, 177, 0.16), rgba(111, 67, 37, 0.4));
-      border: 2px solid rgba(240, 201, 106, 0.46);
-      border-radius: 20px;
-      padding: 16px;
-    }
-
-    .final-panel.show {
-      display: block;
-    }
-
-    .final-panel-title {
-      margin: 0 0 8px;
-      color: var(--ouro);
-      text-align: center;
-      text-transform: uppercase;
-      font-size: clamp(1.15rem, 2vw, 1.55rem);
-      font-weight: 900;
-    }
-
-    .final-panel-help {
-      margin: 0 0 12px;
-      text-align: center;
-      font-size: 1.05rem;
+      border-radius: 14px;
+      font-size: 21px;
+      margin-bottom: 25px;
       line-height: 1.4;
-      font-weight: 800;
     }
 
-    .guess-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto auto;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .word-input {
-      width: 100%;
-      min-height: 56px;
-      border-radius: 16px;
-      border: 3px solid rgba(111, 67, 37, 0.72);
-      background: var(--pergaminho);
-      color: var(--barro-escuro);
-      font-size: 1.28rem;
-      font-weight: 900;
-      padding: 10px 14px;
-      text-transform: uppercase;
-      outline: none;
-      font-family: Georgia, "Times New Roman", serif;
-    }
-
-    .word-input:focus {
-      border-color: var(--ouro);
-    }
-
-    .keyboard-title {
-      margin: 10px 0 8px;
-      text-align: center;
-      font-size: 1rem;
-      text-transform: uppercase;
-      font-weight: 900;
-      opacity: 0.95;
-    }
-
-    .keyboard {
-      display: grid;
-      grid-template-columns: repeat(13, minmax(40px, 1fr));
-      gap: 8px;
-    }
-
-    .key {
-      min-height: 48px;
-      border-radius: 12px;
-      font-size: 1.15rem;
-      font-weight: 900;
-      color: var(--barro-escuro);
-      background: linear-gradient(180deg, var(--pergaminho), #e6c98d);
-      border: 1px solid rgba(111, 67, 37, 0.5);
-      box-shadow: 0 4px 0 rgba(35, 19, 10, 0.28);
-    }
-
-    .key.correct {
-      background: linear-gradient(135deg, var(--ouro), #d7a547);
-    }
-
-    .key.wrong {
-      background: #ffb4b4;
-    }
-
-    .team-board {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .team-card {
-      background: linear-gradient(180deg, rgba(243, 223, 177, 0.14), rgba(111, 67, 37, 0.35));
-      border: 2px solid rgba(240, 201, 106, 0.36);
-      border-radius: 20px;
-      padding: 14px;
-      text-align: center;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-
-    .team-card.active {
-      background: linear-gradient(135deg, var(--ouro), #d6a549);
-      color: #3b2412;
-      border-color: var(--pergaminho);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(35, 19, 10, 0.32);
-    }
-
-    .team-name {
-      display: block;
-      font-size: clamp(1rem, 1.8vw, 1.3rem);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 5px;
-    }
-
-    .team-score {
-      display: block;
-      font-size: clamp(1.8rem, 3vw, 2.7rem);
-      font-weight: 900;
-    }
-
-    .progress {
-      position: relative;
-      z-index: 1;
-      margin-top: 16px;
-      height: 16px;
-      background: rgba(255, 255, 255, 0.18);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--ouro), var(--lapis-claro));
-      transition: width 0.3s ease;
-    }
-
-    .final-screen {
-      display: none;
-      text-align: center;
-      padding: 30px 18px;
-    }
-
-    .final-screen h2 {
-      font-size: clamp(2rem, 5vw, 4rem);
-      margin: 0 0 18px;
-    }
-
-    .final-screen p {
-      font-size: clamp(1.3rem, 2.6vw, 2rem);
-      font-weight: 800;
-      line-height: 1.45;
-    }
-
-    .ranking {
-      width: min(720px, 100%);
-      margin: 26px auto 0;
-      display: grid;
-      gap: 14px;
-    }
-
-    .ranking-item {
+    .palavra {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 70px;
+      margin-bottom: 25px;
+    }
+
+    .letra-espaco {
+      width: 48px;
+      height: 60px;
+      border-bottom: 5px solid #ffd27f;
+      display: flex;
       align-items: center;
-      gap: 14px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 18px;
-      padding: 18px;
-      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-      font-weight: 900;
+      justify-content: center;
+      font-size: 38px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: white;
     }
 
-    .ranking-item.winner {
-      background: linear-gradient(135deg, var(--ouro), #d6a549);
-      color: #3b2412;
+    .espaco {
+      width: 30px;
+      border-bottom: none;
     }
 
-    .answer-reveal {
-      font-weight: 900;
-      color: var(--ouro);
+    .teclado {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 22px;
     }
 
-    @media (max-width: 1040px) {
-      .topbar {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .stage {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "prompt"
-          "hangman"
-          "word";
-      }
-
-      .hangman-box,
-      .word-stage {
-        min-height: auto;
-      }
-
-      .keyboard {
-        grid-template-columns: repeat(7, minmax(40px, 1fr));
-      }
-
-      .guess-row {
-        grid-template-columns: 1fr;
-      }
-
-      .rules-list {
-        grid-template-columns: 1fr;
-      }
+    .teclado button {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 12px;
+      background: #ffd27f;
+      color: #3b1f0e;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
     }
 
-    @media (max-width: 720px) {
-      .team-board {
-        grid-template-columns: 1fr;
-      }
+    .teclado button:hover {
+      background: #fff0cc;
+      transform: scale(1.06);
     }
 
-    @media (max-width: 560px) {
-      body {
-        padding: 10px;
-      }
+    .teclado button:disabled {
+      background: #8a7150;
+      color: #ddd;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-      .game {
-        padding: 14px;
-      }
+    .mensagem {
+      min-height: 45px;
+      font-size: 25px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
 
-      .topbar {
+    .vitoria {
+      color: #9cff9c;
+    }
+
+    .derrota {
+      color: #ff9c9c;
+    }
+
+    .botoes {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .botao {
+      border: none;
+      padding: 14px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 14px;
+      cursor: pointer;
+      background: #f1c27d;
+      color: #3b1f0e;
+      transition: 0.2s;
+    }
+
+    .botao:hover {
+      background: #ffe0a8;
+      transform: scale(1.04);
+    }
+
+    .rodape {
+      text-align: center;
+      margin-top: 25px;
+      color: #f7deb0;
+      font-size: 15px;
+    }
+
+    @media (max-width: 850px) {
+      .conteudo {
         grid-template-columns: 1fr;
       }
 
-      .keyboard {
-        grid-template-columns: repeat(5, minmax(40px, 1fr));
+      h1 {
+        font-size: 32px;
+      }
+
+      .dica {
+        font-size: 18px;
+      }
+
+      .letra-espaco {
+        width: 38px;
+        height: 52px;
+        font-size: 30px;
+      }
+
+      .teclado button {
+        width: 42px;
+        height: 42px;
+        font-size: 19px;
       }
     }
   </style>
 </head>
+
 <body>
-  <section class="game" id="gameScreen">
-    <header>
-      <h1>Jogo da Forca</h1>
-      <p class="subtitle">Mesopotâmia — desafio dos povos entre os rios Tigre e Eufrates</p>
-      <div class="meso-divider"><span>𒀭 𒆠 𒌓</span></div>
-    </header>
 
-    <section class="rules-top" aria-label="Regras do jogo">
-      <h2>Regras principais</h2>
-      <ul class="rules-list">
-        <li>Letra correta: <strong>+1 ponto</strong> para a equipe da vez.</li>
-        <li>Palavra correta: <strong>+5 pontos</strong>.</li>
-        <li>Letra errada: a vez passa para a próxima equipe.</li>
-        <li>Forca completa: a equipe da vez <strong>perde 5 pontos</strong>.</li>
-        <li>Com 3 letras ocultas, começa o <strong>desafio final</strong>.</li>
-        <li>Se uma equipe desistir, <strong>somente ela perde 5 pontos</strong>.</li>
-      </ul>
-      <p class="rules-note">A pergunta da rodada aparece logo abaixo, em destaque, para ficar bem visível na projeção.</p>
-    </section>
+  <div class="jogo-container">
+    <h1>Jogo da Forca</h1>
+    <div class="subtitulo">Tema: Renascimento Cultural</div>
 
-    <div class="topbar">
-      <div class="info-card">
-        <span class="info-label">Questão</span>
-        <span class="info-value" id="roundInfo">1 / 15</span>
-      </div>
-      <div class="info-card">
-        <span class="info-label">Vez da equipe</span>
-        <span class="info-value" id="turnInfo">Equipe 1</span>
-      </div>
-      <div class="info-card">
-        <span class="info-label">Erros na rodada</span>
-        <span class="info-value" id="errorsInfo">0 / 6</span>
-      </div>
-      <div class="info-card">
-        <span class="info-label">Letras ocultas</span>
-        <span class="info-value" id="hiddenInfo">0</span>
-      </div>
-    </div>
+    <div class="conteudo">
 
-    <div class="stage">
-      <div class="prompt-area">
-        <div class="turn-banner" id="turnBanner">Vez da Equipe 1</div>
-        <h2 class="question-title">Pergunta da rodada</h2>
-        <div class="clue" id="clue"></div>
-      </div>
+      <div class="forca-area">
+        <svg viewBox="0 0 250 300">
+          <!-- Estrutura da forca -->
+          <line x1="30" y1="270" x2="180" y2="270" stroke="#3b1f0e" stroke-width="7"/>
+          <line x1="75" y1="270" x2="75" y2="35" stroke="#3b1f0e" stroke-width="7"/>
+          <line x1="75" y1="35" x2="170" y2="35" stroke="#3b1f0e" stroke-width="7"/>
+          <line x1="170" y1="35" x2="170" y2="70" stroke="#3b1f0e" stroke-width="7"/>
 
-      <div class="hangman-box">
-        <svg viewBox="0 0 260 320" aria-label="Desenho da forca">
-          <line class="line" x1="32" y1="292" x2="220" y2="292"></line>
-          <line class="line" x1="72" y1="292" x2="72" y2="30"></line>
-          <line class="line" x1="72" y1="30" x2="180" y2="30"></line>
-          <line class="line" x1="180" y1="30" x2="180" y2="70"></line>
-
-          <circle class="body-part" id="part1" cx="180" cy="98" r="27"></circle>
-          <line class="body-part" id="part2" x1="180" y1="125" x2="180" y2="205"></line>
-          <line class="body-part" id="part3" x1="180" y1="150" x2="140" y2="185"></line>
-          <line class="body-part" id="part4" x1="180" y1="150" x2="220" y2="185"></line>
-          <line class="body-part" id="part5" x1="180" y1="205" x2="145" y2="252"></line>
-          <line class="body-part" id="part6" x1="180" y1="205" x2="215" y2="252"></line>
+          <!-- Boneco -->
+          <circle id="parte1" class="parte-corpo" cx="170" cy="95" r="24"/>
+          <line id="parte2" class="parte-corpo" x1="170" y1="119" x2="170" y2="190"/>
+          <line id="parte3" class="parte-corpo" x1="170" y1="140" x2="135" y2="165"/>
+          <line id="parte4" class="parte-corpo" x1="170" y1="140" x2="205" y2="165"/>
+          <line id="parte5" class="parte-corpo" x1="170" y1="190" x2="140" y2="235"/>
+          <line id="parte6" class="parte-corpo" x1="170" y1="190" x2="200" y2="235"/>
         </svg>
-        <p class="forca-caption">Letra errada passa a vez. Se a forca completar, a equipe da vez perde 5 pontos.</p>
       </div>
 
-      <div class="word-stage">
-        <h2 class="word-stage-title">Palavra da rodada</h2>
-        <div class="word" id="wordDisplay"></div>
-      </div>
-    </div>
+      <div class="painel-jogo">
 
-    <div class="controls">
-      <div class="message" id="message"></div>
-
-      <div class="action-row">
-        <button class="action-btn" id="guessWordBtn">Adivinhar palavra</button>
-        <button class="action-btn primary" id="nextBtn" style="display:none;">Próxima questão</button>
-        <button class="action-btn secondary" id="restartBtn">Reiniciar jogo</button>
-      </div>
-
-      <div class="final-panel" id="finalPanel">
-        <h3 class="final-panel-title" id="finalPanelTitle">Adivinhar a palavra</h3>
-        <p class="final-panel-help" id="finalPanelHelp"></p>
-        <div class="guess-row">
-          <input type="text" class="word-input" id="wordGuessInput" placeholder="Digite a palavra completa" autocomplete="off" />
-          <button class="submit-word-btn action-btn primary" id="submitWordBtn">Confirmar palavra</button>
-          <button class="pass-btn" id="passTurnBtn">Passar vez</button>
-          <button class="give-up-btn" id="giveUpBtn" style="display:none;">Desistir (-5 para a equipe)</button>
+        <div class="contador">
+          Palavra <span id="numeroPalavra">1</span> de 15
         </div>
-      </div>
 
-      <div class="keyboard-title" id="keyboardTitle">Escolha uma letra</div>
-      <div class="keyboard" id="keyboard"></div>
+        <div class="dica">
+          <strong>Dica:</strong>
+          <span id="textoDica"></span>
+        </div>
+
+        <div class="palavra" id="palavraSecreta"></div>
+
+        <div class="teclado" id="teclado"></div>
+
+        <div class="mensagem" id="mensagem"></div>
+
+        <div class="botoes">
+          <button class="botao" onclick="reiniciarPalavra()">Reiniciar Palavra</button>
+          <button class="botao" onclick="proximaPalavra()">Próxima Palavra</button>
+        </div>
+
+      </div>
     </div>
 
-    <div class="team-board">
-      <div class="team-card active" id="teamCard0">
-        <span class="team-name">Equipe 1</span>
-        <span class="team-score" id="teamScore0">0</span>
-      </div>
-      <div class="team-card" id="teamCard1">
-        <span class="team-name">Equipe 2</span>
-        <span class="team-score" id="teamScore1">0</span>
-      </div>
-      <div class="team-card" id="teamCard2">
-        <span class="team-name">Equipe 3</span>
-        <span class="team-score" id="teamScore2">0</span>
-      </div>
+    <div class="rodape">
+      Atividade interativa de História — Renascimento Cultural
     </div>
-
-    <div class="progress" aria-label="Progresso do jogo">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-  </section>
-
-  <section class="game final-screen" id="finalScreen">
-    <h2>Fim do jogo!</h2>
-    <p id="finalMessage"></p>
-    <div class="ranking" id="ranking"></div>
-    <div class="action-row" style="margin-top: 22px;">
-      <button class="action-btn primary" onclick="restartGame()">Jogar novamente</button>
-    </div>
-  </section>
+  </div>
 
   <script>
-    const questions = [
-      { clue: "Região antiga que significa ‘terra entre rios’.", answer: "MESOPOTAMIA" },
-      { clue: "Um dos dois rios fundamentais para o surgimento das primeiras cidades mesopotâmicas.", answer: "TIGRE" },
-      { clue: "Rio que, ao lado do Tigre, favoreceu a agricultura na Mesopotâmia.", answer: "EUFRATES" },
-      { clue: "Atividade favorecida pela fertilidade do solo próximo aos rios.", answer: "AGRICULTURA" },
-      { clue: "Continente onde se localizava a antiga civilização mesopotâmica.", answer: "ASIATICO" },
-      { clue: "País atual que ocupa a maior parte das antigas terras mesopotâmicas.", answer: "IRAQUE" },
-      { clue: "Povo que se desenvolveu na Mesopotâmia e aparece entre suas importantes civilizações.", answer: "SUMERIOS" },
-      { clue: "Outro povo mesopotâmico citado no conteúdo, conhecido como uma das civilizações da região.", answer: "ASSIRIOS" },
-      { clue: "Povo mesopotâmico citado junto aos sumérios e assírios.", answer: "ACADIOS" },
-      { clue: "Civilização mesopotâmica também apresentada entre os povos da região.", answer: "AMORITAS" },
-      { clue: "Povo também chamado de babilônios no material.", answer: "CALDEUS" },
-      { clue: "Como era a sociedade mesopotâmica: dividida em grupos com diferentes funções.", answer: "HIERARQUIZADA" },
-      { clue: "Religião de quem acredita em vários deuses e deusas.", answer: "POLITEISTA" },
-      { clue: "Construções que representavam a morada dos deuses e deusas.", answer: "TEMPLOS" },
-      { clue: "Grupo responsável por atividades religiosas, administrativas e pela transmissão das tradições.", answer: "SACERDOTES" }
+    const listaPalavras = [
+      {
+        palavra: "RENASCIMENTO",
+        dica: "Movimento cultural europeu que valorizou a arte, a ciência e o ser humano."
+      },
+      {
+        palavra: "HUMANISMO",
+        dica: "Corrente de pensamento que valorizava as capacidades e ações humanas."
+      },
+      {
+        palavra: "ANTROPOCENTRISMO",
+        dica: "Ideia que coloca o ser humano no centro das reflexões."
+      },
+      {
+        palavra: "MECENATO",
+        dica: "Prática de financiar artistas, cientistas e escritores."
+      },
+      {
+        palavra: "BURGUESIA",
+        dica: "Grupo social ligado ao comércio que apoiou muitas produções renascentistas."
+      },
+      {
+        palavra: "PERSPECTIVA",
+        dica: "Técnica artística usada para criar sensação de profundidade nas pinturas."
+      },
+      {
+        palavra: "LEONARDO",
+        dica: "Primeiro nome do artista que pintou a Mona Lisa e a Última Ceia."
+      },
+      {
+        palavra: "MICHELANGELO",
+        dica: "Artista renascentista que pintou o teto da Capela Sistina."
+      },
+      {
+        palavra: "RAFAEL",
+        dica: "Pintor renascentista conhecido por obras harmoniosas e equilibradas."
+      },
+      {
+        palavra: "MONALISA",
+        dica: "Famosa pintura de Leonardo da Vinci."
+      },
+      {
+        palavra: "IMPRENSA",
+        dica: "Invenção que facilitou a circulação de livros e ideias pela Europa."
+      },
+      {
+        palavra: "GUTENBERG",
+        dica: "Nome do inventor associado à prensa de tipos móveis."
+      },
+      {
+        palavra: "CIENCIA",
+        dica: "Área do conhecimento muito valorizada durante o Renascimento."
+      },
+      {
+        palavra: "ANATOMIA",
+        dica: "Estudo do corpo humano, importante para artistas e estudiosos renascentistas."
+      },
+      {
+        palavra: "FLORENCA",
+        dica: "Cidade italiana considerada um dos principais centros do Renascimento."
+      }
     ];
 
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    const maxErrors = 6;
-    const teams = [
-      { name: "Equipe 1", score: 0 },
-      { name: "Equipe 2", score: 0 },
-      { name: "Equipe 3", score: 0 }
-    ];
+    const alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-    let currentIndex = 0;
-    let currentTeamIndex = 0;
-    let guessedLetters = [];
-    let errors = 0;
-    let roundFinished = false;
-    let panelOpen = false;
-    let finalChallengeActive = false;
-    let finalChallengeStep = 0;
-    let extraLetterAllowed = false;
-    let extraLetterUsed = false;
+    let indiceAtual = 0;
+    let palavraAtual = "";
+    let dicaAtual = "";
+    let letrasCorretas = [];
+    let letrasUsadas = [];
+    let erros = 0;
+    const maxErros = 6;
+    let jogoEncerrado = false;
 
-    const clueEl = document.getElementById("clue");
-    const wordDisplayEl = document.getElementById("wordDisplay");
-    const keyboardEl = document.getElementById("keyboard");
-    const keyboardTitleEl = document.getElementById("keyboardTitle");
-    const messageEl = document.getElementById("message");
-    const roundInfoEl = document.getElementById("roundInfo");
-    const turnInfoEl = document.getElementById("turnInfo");
-    const errorsInfoEl = document.getElementById("errorsInfo");
-    const hiddenInfoEl = document.getElementById("hiddenInfo");
-    const turnBannerEl = document.getElementById("turnBanner");
-    const progressBarEl = document.getElementById("progressBar");
-    const nextBtn = document.getElementById("nextBtn");
-    const restartBtn = document.getElementById("restartBtn");
-    const guessWordBtn = document.getElementById("guessWordBtn");
-    const finalPanel = document.getElementById("finalPanel");
-    const finalPanelTitle = document.getElementById("finalPanelTitle");
-    const finalPanelHelp = document.getElementById("finalPanelHelp");
-    const wordGuessInput = document.getElementById("wordGuessInput");
-    const submitWordBtn = document.getElementById("submitWordBtn");
-    const passTurnBtn = document.getElementById("passTurnBtn");
-    const giveUpBtn = document.getElementById("giveUpBtn");
-    const gameScreen = document.getElementById("gameScreen");
-    const finalScreen = document.getElementById("finalScreen");
-    const finalMessage = document.getElementById("finalMessage");
-    const rankingEl = document.getElementById("ranking");
-
-    function normalizeText(text) {
-      return text
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^A-Z ]/gi, "")
-        .toUpperCase()
-        .trim();
+    function removerAcentos(texto) {
+      return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    function getAnswer() {
-      return normalizeText(questions[currentIndex].answer);
+    function iniciarJogo() {
+      const item = listaPalavras[indiceAtual];
+      palavraAtual = removerAcentos(item.palavra.toUpperCase());
+      dicaAtual = item.dica;
+
+      letrasCorretas = [];
+      letrasUsadas = [];
+      erros = 0;
+      jogoEncerrado = false;
+
+      document.getElementById("numeroPalavra").textContent = indiceAtual + 1;
+      document.getElementById("textoDica").textContent = dicaAtual;
+      document.getElementById("mensagem").textContent = "";
+      document.getElementById("mensagem").className = "mensagem";
+
+      esconderBoneco();
+      criarTeclado();
+      atualizarPalavra();
     }
 
-    function getHiddenUniqueLetters() {
-      const answerLetters = [...new Set(getAnswer().replace(/ /g, "").split(""))];
-      return answerLetters.filter(letter => !guessedLetters.includes(letter));
-    }
+    function criarTeclado() {
+      const teclado = document.getElementById("teclado");
+      teclado.innerHTML = "";
 
-    function updateHiddenLettersInfo() {
-      hiddenInfoEl.textContent = getHiddenUniqueLetters().length;
-    }
-
-    function initKeyboard() {
-      keyboardEl.innerHTML = "";
-      alphabet.forEach(letter => {
-        const button = document.createElement("button");
-        button.className = "key";
-        button.textContent = letter;
-        button.addEventListener("click", () => handleLetterClick(letter));
-        keyboardEl.appendChild(button);
+      alfabeto.forEach(letra => {
+        const botao = document.createElement("button");
+        botao.textContent = letra;
+        botao.onclick = () => escolherLetra(letra, botao);
+        teclado.appendChild(botao);
       });
     }
 
-    function loadQuestion() {
-      roundFinished = false;
-      panelOpen = false;
-      finalChallengeActive = false;
-      finalChallengeStep = 0;
-      extraLetterAllowed = false;
-      extraLetterUsed = false;
-      guessedLetters = [];
-      errors = 0;
+    function escolherLetra(letra, botao) {
+      if (jogoEncerrado || letrasUsadas.includes(letra)) {
+        return;
+      }
 
-      nextBtn.style.display = "none";
-      guessWordBtn.style.display = "inline-flex";
-      finalPanel.classList.remove("show");
-      giveUpBtn.style.display = "none";
-      passTurnBtn.style.display = "inline-flex";
-      wordGuessInput.value = "";
-      wordGuessInput.disabled = false;
-      submitWordBtn.disabled = false;
-      passTurnBtn.disabled = false;
-      giveUpBtn.disabled = false;
-      messageEl.textContent = "";
-      messageEl.className = "message";
-      keyboardTitleEl.textContent = "Escolha uma letra";
+      letrasUsadas.push(letra);
+      botao.disabled = true;
 
-      clueEl.textContent = questions[currentIndex].clue;
-      roundInfoEl.textContent = `${currentIndex + 1} / ${questions.length}`;
-      errorsInfoEl.textContent = `${errors} / ${maxErrors}`;
-      progressBarEl.style.width = `${(currentIndex / questions.length) * 100}%`;
+      if (palavraAtual.includes(letra)) {
+        letrasCorretas.push(letra);
+      } else {
+        erros++;
+        mostrarParteCorpo(erros);
+      }
 
-      resetBodyParts();
-      initKeyboard();
-      renderWord();
-      updateTeamBoard();
-      updateHiddenLettersInfo();
+      atualizarPalavra();
+      verificarResultado();
     }
 
-    function renderWord(showAll = false) {
-      const answer = getAnswer();
-      wordDisplayEl.innerHTML = "";
+    function atualizarPalavra() {
+      const areaPalavra = document.getElementById("palavraSecreta");
+      areaPalavra.innerHTML = "";
 
-      answer.split("").forEach(char => {
-        const slot = document.createElement("div");
-        slot.className = "letter-slot";
+      palavraAtual.split("").forEach(letra => {
+        const div = document.createElement("div");
 
-        if (char === " ") {
-          slot.classList.add("space");
-          slot.textContent = "";
-        } else if (showAll || guessedLetters.includes(char)) {
-          slot.textContent = char;
+        if (letra === " ") {
+          div.className = "letra-espaco espaco";
+          div.textContent = "";
         } else {
-          slot.textContent = "";
+          div.className = "letra-espaco";
+          div.textContent = letrasCorretas.includes(letra) ? letra : "";
         }
 
-        wordDisplayEl.appendChild(slot);
+        areaPalavra.appendChild(div);
       });
     }
 
-    function updateTeamBoard() {
-      teams.forEach((team, index) => {
-        document.getElementById(`teamScore${index}`).textContent = team.score;
-        document.getElementById(`teamCard${index}`).classList.toggle("active", index === currentTeamIndex);
-      });
+    function verificarResultado() {
+      const venceu = palavraAtual
+        .split("")
+        .every(letra => letra === " " || letrasCorretas.includes(letra));
 
-      turnInfoEl.textContent = teams[currentTeamIndex].name;
-      turnBannerEl.textContent = `Vez da ${teams[currentTeamIndex].name}`;
-    }
-
-    function setMessage(text, type = "notice") {
-      messageEl.textContent = text;
-      messageEl.className = `message ${type}`;
-    }
-
-    function getKeyButton(letter) {
-      return [...document.querySelectorAll(".key")].find(item => item.textContent === letter);
-    }
-
-    function markKeyboardLetter(letter, status) {
-      const btn = getKeyButton(letter);
-      if (!btn) return;
-      btn.disabled = true;
-      if (status === "correct") btn.classList.add("correct");
-      if (status === "wrong") btn.classList.add("wrong");
-    }
-
-    function enableUnusedLetters() {
-      document.querySelectorAll(".key").forEach(btn => {
-        btn.disabled = guessedLetters.includes(btn.textContent);
-      });
-    }
-
-    function disableAllLetters() {
-      document.querySelectorAll(".key").forEach(btn => btn.disabled = true);
-    }
-
-    function handleLetterClick(letter) {
-      if (roundFinished) return;
-      if (guessedLetters.includes(letter)) return;
-      if (panelOpen && !extraLetterAllowed) return;
-
-      if (finalChallengeActive && extraLetterAllowed) {
-        handleExtraFinalLetter(letter);
-        return;
+      if (venceu) {
+        jogoEncerrado = true;
+        const mensagem = document.getElementById("mensagem");
+        mensagem.textContent = "Parabéns! Você acertou a palavra!";
+        mensagem.classList.add("vitoria");
+        desativarTeclado();
       }
 
-      handleRegularLetter(letter);
+      if (erros >= maxErros) {
+        jogoEncerrado = true;
+        const mensagem = document.getElementById("mensagem");
+        mensagem.textContent = `Fim de jogo! A palavra era: ${palavraAtual}`;
+        mensagem.classList.add("derrota");
+        revelarPalavra();
+        desativarTeclado();
+      }
     }
 
-    function handleRegularLetter(letter) {
-      guessedLetters.push(letter);
-      const currentTeam = teams[currentTeamIndex];
-      const answer = getAnswer();
+    function mostrarParteCorpo(numero) {
+      const parte = document.getElementById("parte" + numero);
+      if (parte) {
+        parte.style.display = "block";
+      }
+    }
 
-      if (answer.includes(letter)) {
-        currentTeam.score += 1;
-        markKeyboardLetter(letter, "correct");
-        renderWord();
-        updateHiddenLettersInfo();
-        updateTeamBoard();
-        setMessage(`${currentTeam.name} acertou a letra ${letter} e ganhou 1 ponto! Continua jogando.`, "success");
+    function esconderBoneco() {
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById("parte" + i).style.display = "none";
+      }
+    }
 
-        if (getHiddenUniqueLetters().length <= 3) {
-          startFinalChallenge();
+    function revelarPalavra() {
+      palavraAtual.split("").forEach(letra => {
+        if (letra !== " " && !letrasCorretas.includes(letra)) {
+          letrasCorretas.push(letra);
         }
-      } else {
-        markKeyboardLetter(letter, "wrong");
-        errors++;
-        errorsInfoEl.textContent = `${errors} / ${maxErrors}`;
-        showBodyPart(errors);
-
-        if (errors >= maxErrors) {
-          activateFullHangmanPenalty();
-        } else {
-          const previousTeamName = currentTeam.name;
-          advanceTeam();
-          setMessage(`${previousTeamName} errou a letra ${letter}. A vez passa para ${teams[currentTeamIndex].name}.`, "fail");
-        }
-      }
-    }
-
-    function openGuessPanel({ title, help, allowPass = true, showGiveUp = false }) {
-      panelOpen = true;
-      finalPanel.classList.add("show");
-      finalPanelTitle.textContent = title;
-      finalPanelHelp.innerHTML = help;
-      passTurnBtn.style.display = allowPass ? "inline-flex" : "none";
-      giveUpBtn.style.display = showGiveUp ? "inline-flex" : "none";
-      wordGuessInput.value = "";
-      wordGuessInput.focus();
-    }
-
-    function closeGuessPanel() {
-      panelOpen = false;
-      finalPanel.classList.remove("show");
-      giveUpBtn.style.display = "none";
-      passTurnBtn.style.display = "inline-flex";
-      wordGuessInput.value = "";
-    }
-
-    function openOptionalGuessPanel() {
-      if (roundFinished || finalChallengeActive) return;
-      disableAllLetters();
-      guessWordBtn.style.display = "none";
-      openGuessPanel({
-        title: "Adivinhar palavra",
-        help: `${teams[currentTeamIndex].name}, digite a palavra completa para tentar ganhar <strong>5 pontos</strong> ou clique em <strong>Passar vez</strong>.`,
-        allowPass: true,
-        showGiveUp: false
       });
-      setMessage(`${teams[currentTeamIndex].name} escolheu tentar adivinhar a palavra.`, "notice");
+      atualizarPalavra();
     }
 
-    function startFinalChallenge() {
-      finalChallengeActive = true;
-      finalChallengeStep = 1;
-      extraLetterAllowed = false;
-      extraLetterUsed = false;
-      disableAllLetters();
-      guessWordBtn.style.display = "none";
-      keyboardTitleEl.textContent = "Desafio final: a palavra deve ser resolvida";
-      openGuessPanel({
-        title: "Faltam 3 letras ou menos!",
-        help: `${teams[currentTeamIndex].name} deve adivinhar a palavra completa. Se errar, a próxima equipe poderá escolher <strong>1 letra extra</strong> e depois precisará adivinhar.`,
-        allowPass: false,
-        showGiveUp: true
-      });
-      setMessage(`${teams[currentTeamIndex].name}, agora é obrigatório tentar a palavra.`, "notice");
+    function desativarTeclado() {
+      const botoes = document.querySelectorAll(".teclado button");
+      botoes.forEach(botao => botao.disabled = true);
     }
 
-    function submitWordGuess() {
-      if (roundFinished || !panelOpen) return;
+    function reiniciarPalavra() {
+      iniciarJogo();
+    }
 
-      const typedGuess = normalizeText(wordGuessInput.value);
-      const correctAnswer = getAnswer();
-      const currentTeam = teams[currentTeamIndex];
+    function proximaPalavra() {
+      indiceAtual++;
 
-      if (!typedGuess) {
-        setMessage("Digite a palavra antes de confirmar a resposta.", "fail");
-        wordGuessInput.focus();
-        return;
+      if (indiceAtual >= listaPalavras.length) {
+        indiceAtual = 0;
       }
 
-      if (typedGuess === correctAnswer) {
-        currentTeam.score += 5;
-        finishRoundWithWinner(currentTeam.name);
-        return;
-      }
-
-      if (finalChallengeActive) {
-        handleFinalChallengeWrongGuess(currentTeam.name);
-      } else {
-        const previousTeamName = currentTeam.name;
-        closeGuessPanel();
-        guessWordBtn.style.display = "inline-flex";
-        enableUnusedLetters();
-        advanceTeam();
-        setMessage(`${previousTeamName} não acertou a palavra. A vez passa para ${teams[currentTeamIndex].name}.`, "fail");
-      }
+      iniciarJogo();
     }
 
-    function handleFinalChallengeWrongGuess(teamName) {
-      wordGuessInput.value = "";
-
-      if (finalChallengeStep === 1) {
-        advanceTeam();
-        finalChallengeStep = 2;
-        extraLetterAllowed = true;
-        extraLetterUsed = false;
-        enableUnusedLetters();
-        keyboardTitleEl.textContent = `${teams[currentTeamIndex].name}: escolha 1 letra extra antes de adivinhar`;
-        openGuessPanel({
-          title: "Segunda equipe no desafio final",
-          help: `${teamName} errou. Agora ${teams[currentTeamIndex].name} pode escolher <strong>1 letra extra</strong>. Depois disso, deverá adivinhar a palavra.`,
-          allowPass: false,
-          showGiveUp: true
-        });
-        setMessage(`${teamName} errou. ${teams[currentTeamIndex].name}, escolha 1 letra extra.`, "fail");
-        return;
-      }
-
-      if (finalChallengeStep === 2) {
-        advanceTeam();
-        finalChallengeStep = 3;
-        extraLetterAllowed = false;
-        extraLetterUsed = false;
-        disableAllLetters();
-        keyboardTitleEl.textContent = "Terceira equipe: deve adivinhar a palavra";
-        openGuessPanel({
-          title: "Última equipe no desafio final",
-          help: `${teamName} não acertou. Agora ${teams[currentTeamIndex].name} deve adivinhar a palavra. Se desistir, somente essa equipe perderá <strong>5 pontos</strong>.`,
-          allowPass: false,
-          showGiveUp: true
-        });
-        setMessage(`${teamName} errou. ${teams[currentTeamIndex].name} precisa tentar a palavra.`, "fail");
-        return;
-      }
-
-      advanceTeam();
-      finalChallengeStep = 3;
-      extraLetterAllowed = false;
-      extraLetterUsed = false;
-      disableAllLetters();
-      openGuessPanel({
-        title: "Nova tentativa no desafio final",
-        help: `${teamName} não acertou. Agora ${teams[currentTeamIndex].name} deve tentar a palavra. Se desistir, somente essa equipe perderá <strong>5 pontos</strong>.`,
-        allowPass: false,
-        showGiveUp: true
-      });
-      setMessage(`${teamName} errou. A vez passa para ${teams[currentTeamIndex].name}.`, "fail");
-    }
-
-    function handleExtraFinalLetter(letter) {
-      if (!finalChallengeActive || !extraLetterAllowed || extraLetterUsed || guessedLetters.includes(letter)) return;
-
-      guessedLetters.push(letter);
-      extraLetterUsed = true;
-      extraLetterAllowed = false;
-      const currentTeam = teams[currentTeamIndex];
-      const answer = getAnswer();
-
-      if (answer.includes(letter)) {
-        currentTeam.score += 1;
-        markKeyboardLetter(letter, "correct");
-        renderWord();
-        updateHiddenLettersInfo();
-        updateTeamBoard();
-        setMessage(`${currentTeam.name} acertou a letra extra ${letter}, ganhou 1 ponto e agora deve adivinhar a palavra.`, "success");
-      } else {
-        markKeyboardLetter(letter, "wrong");
-        errors++;
-        errorsInfoEl.textContent = `${errors} / ${maxErrors}`;
-        showBodyPart(errors);
-        setMessage(`${currentTeam.name} errou a letra extra ${letter}, mas ainda precisa tentar adivinhar a palavra.`, "fail");
-      }
-
-      disableAllLetters();
-      keyboardTitleEl.textContent = `${currentTeam.name}: agora confirme a palavra completa`;
-      openGuessPanel({
-        title: "Agora adivinhe a palavra",
-        help: `${currentTeam.name}, depois da letra extra, digite a palavra completa.`,
-        allowPass: false,
-        showGiveUp: true
-      });
-    }
-
-    function handlePassTurn() {
-      if (roundFinished || !panelOpen) return;
-
-      if (finalChallengeActive) {
-        applySingleTeamGiveUp(`${teams[currentTeamIndex].name} desistiu do desafio final.`);
-        return;
-      }
-
-      const previousTeamName = teams[currentTeamIndex].name;
-      closeGuessPanel();
-      guessWordBtn.style.display = "inline-flex";
-      enableUnusedLetters();
-      advanceTeam();
-      setMessage(`${previousTeamName} passou a vez. Agora joga ${teams[currentTeamIndex].name}.`, "notice");
-    }
-
-    function applySingleTeamGiveUp(reason) {
-      const teamThatGaveUp = teams[currentTeamIndex];
-      teamThatGaveUp.score -= 5;
-      updateTeamBoard();
-
-      const teamName = teamThatGaveUp.name;
-      advanceTeam();
-      finalChallengeActive = true;
-      finalChallengeStep = 3;
-      extraLetterAllowed = false;
-      extraLetterUsed = false;
-      disableAllLetters();
-      guessWordBtn.style.display = "none";
-      keyboardTitleEl.textContent = "Desafio final: próxima equipe deve tentar";
-
-      openGuessPanel({
-        title: "Nova tentativa no desafio final",
-        help: `${teamName} desistiu e perdeu <strong>5 pontos</strong>. Agora ${teams[currentTeamIndex].name} deve tentar adivinhar a palavra. Se desistir, apenas essa equipe perderá 5 pontos e a vez seguirá adiante.`,
-        allowPass: false,
-        showGiveUp: true
-      });
-
-      setMessage(`${reason} ${teamName} perdeu 5 pontos. Agora ${teams[currentTeamIndex].name} deve tentar a palavra.`, "fail");
-    }
-
-    function activateFullHangmanPenalty() {
-      const penalizedTeam = teams[currentTeamIndex];
-      penalizedTeam.score -= 5;
-      updateTeamBoard();
-      const penalizedName = penalizedTeam.name;
-      advanceTeam();
-      finalChallengeActive = true;
-      finalChallengeStep = 3;
-      extraLetterAllowed = false;
-      extraLetterUsed = false;
-      disableAllLetters();
-      guessWordBtn.style.display = "none";
-      keyboardTitleEl.textContent = "Forca ativada: adivinhe a palavra";
-      openGuessPanel({
-        title: "Forca ativada!",
-        help: `${penalizedName} perdeu <strong>5 pontos</strong>. Agora ${teams[currentTeamIndex].name} pode tentar adivinhar a palavra. Se desistir, somente essa equipe perderá 5 pontos e a vez passará para a próxima.`,
-        allowPass: false,
-        showGiveUp: true
-      });
-      setMessage(`${penalizedName} completou a forca e perdeu 5 pontos. A vez passa para ${teams[currentTeamIndex].name}.`, "fail");
-    }
-
-        function finishRoundWithWinner(winningTeamName) {
-      roundFinished = true;
-      finalChallengeActive = false;
-      panelOpen = false;
-
-      renderWord(true);
-      closeGuessPanel();
-      disableAllLetters();
-
-      guessWordBtn.style.display = "none";
-      nextBtn.style.display = "inline-flex";
-
-      const winnerIndex = teams.findIndex(team => team.name === winningTeamName);
-      currentTeamIndex = (winnerIndex + 1) % teams.length;
-
-      updateTeamBoard();
-
-      setMessage(
-        `${winningTeamName} acertou a palavra, ganhou 5 pontos e a próxima rodada começará com ${teams[currentTeamIndex].name}!`,
-        "success"
-      );
-    }
-
-    function advanceTeam() {
-      currentTeamIndex = (currentTeamIndex + 1) % teams.length;
-      updateTeamBoard();
-    }
-
-    function showBodyPart(number) {
-      const part = document.getElementById(`part${number}`);
-      if (part) {
-        part.style.display = "block";
-      }
-    }
-
-    function resetBodyParts() {
-      for (let i = 1; i <= maxErrors; i++) {
-        const part = document.getElementById(`part${i}`);
-        if (part) {
-          part.style.display = "none";
-        }
-      }
-    }
-
-    function nextQuestion() {
-      if (currentIndex < questions.length - 1) {
-        currentIndex++;
-        loadQuestion();
-      } else {
-        finishGame();
-      }
-    }
-
-    function finishGame() {
-      progressBarEl.style.width = "100%";
-
-      gameScreen.style.display = "none";
-      finalScreen.style.display = "block";
-
-      const rankedTeams = [...teams].sort((a, b) => b.score - a.score);
-      const topScore = rankedTeams[0].score;
-      const winners = rankedTeams.filter(team => team.score === topScore);
-
-      if (winners.length === 1) {
-        finalMessage.textContent =
-          `${winners[0].name} venceu o jogo com ${winners[0].score} pontos!`;
-      } else {
-        finalMessage.textContent =
-          `Temos empate na liderança com ${topScore} pontos!`;
-      }
-
-      rankingEl.innerHTML = "";
-
-      rankedTeams.forEach((team, index) => {
-        const item = document.createElement("div");
-        item.className = "ranking-item";
-
-        if (team.score === topScore) {
-          item.classList.add("winner");
-        }
-
-        item.innerHTML = `
-          <span>${index + 1}º lugar — ${team.name}</span>
-          <strong>${team.score} pontos</strong>
-        `;
-
-        rankingEl.appendChild(item);
-      });
-    }
-
-    function restartGame() {
-      currentIndex = 0;
-      currentTeamIndex = 0;
-
-      teams.forEach(team => {
-        team.score = 0;
-      });
-
-      finalScreen.style.display = "none";
-      gameScreen.style.display = "block";
-
-      loadQuestion();
-    }
-
-    guessWordBtn.addEventListener("click", openOptionalGuessPanel);
-    submitWordBtn.addEventListener("click", submitWordGuess);
-    passTurnBtn.addEventListener("click", handlePassTurn);
-
-    giveUpBtn.addEventListener("click", () => {
-      applySingleTeamGiveUp(
-        `${teams[currentTeamIndex].name} escolheu desistir da rodada.`
-      );
-    });
-
-    nextBtn.addEventListener("click", nextQuestion);
-    restartBtn.addEventListener("click", restartGame);
-
-    wordGuessInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        submitWordGuess();
-      }
-    });
-
-    document.addEventListener("keydown", event => {
-      const letter = event.key.toUpperCase();
-
-      if (!alphabet.includes(letter)) {
-        return;
-      }
-
-      const keyButton = getKeyButton(letter);
-
-      if (keyButton && !keyButton.disabled) {
-        handleLetterClick(letter);
-      }
-    });
-
-    loadQuestion();
+    iniciarJogo();
   </script>
+
 </body>
 </html>
